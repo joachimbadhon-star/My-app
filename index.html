@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maan's Christmas Countdown</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800;900&family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=Poppins:wght@300;400;500;600;700&family=Sacramento&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        kuromi: {
+                            night: '#070b19',
+                            midnight: '#0f172a',
+                            royal: '#1e1b4b',
+                            deepBlue: '#1e293b',
+                            ice: '#93c5fd',
+                            iceLight: '#dbeafe',
+                            lavender: '#c084fc',
+                            purple: '#a855f7',
+                            pink: '#f472b6',
+                            gold: '#fef08a'
+                        }
+                    },
+                    fontFamily: {
+                        heading: ['Cinzel', 'serif'],
+                        serif: ['Playfair Display', 'serif'],
+                        sans: ['Poppins', 'sans-serif'],
+                        cursive: ['Sacramento', 'cursive']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #070b19;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e1b4b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3b82f6;
+        }
+
+        /* Glassmorphism containers */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.72);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid rgba(147, 197, 253, 0.22);
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
+        }
+
+        .glass-card {
+            background: rgba(30, 27, 75, 0.55);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(192, 132, 252, 0.25);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+        }
+
+        /* Ice blue & gold glows */
+        .glow-text-ice {
+            text-shadow: 0 0 12px rgba(147, 197, 253, 0.8), 0 0 24px rgba(59, 130, 246, 0.5);
+        }
+
+        .glow-text-gold {
+            text-shadow: 0 0 12px rgba(254, 240, 138, 0.8), 0 0 20px rgba(234, 179, 8, 0.5);
+        }
+
+        .glow-box-blue {
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.3), inset 0 0 15px rgba(147, 197, 253, 0.15);
+        }
+
+        .glow-box-purple {
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.3), inset 0 0 15px rgba(192, 132, 252, 0.15);
+        }
+
+        /* Ambient floating animations */
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(1.5deg); }
+        }
+        .animate-float {
+            animation: floatSlow 6s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.4; transform: scale(1); }
+            50% { opacity: 0.75; transform: scale(1.06); }
+        }
+        .ambient-pulse {
+            animation: pulseGlow 7s ease-in-out infinite;
+        }
+
+        /* Countdown Card Number Container */
+        .time-card {
+            background: linear-gradient(145deg, rgba(15, 23, 42, 0.85) 0%, rgba(30, 27, 75, 0.85) 100%);
+            border: 1px solid rgba(147, 197, 253, 0.3);
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 8px 20px rgba(0,0,0,0.4);
+        }
+
+        /* Kuromi Jester Cap Bow Silhouette */
+        .kuromi-badge {
+            background: linear-gradient(135deg, rgba(88, 28, 135, 0.7) 0%, rgba(30, 27, 75, 0.9) 100%);
+            border: 1px solid rgba(192, 132, 252, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-kuromi-night text-slate-100 font-sans min-h-screen relative overflow-x-hidden select-none">
+
+    <!-- Maan's photo background: visible but very subtle behind the existing UI -->
+    <div class="fixed inset-0 z-0 pointer-events-none bg-center bg-cover bg-no-repeat"
+         style="background-image: url('maan.jpg'); background-position: center 34%; opacity: 0.16; filter: saturate(0.9) brightness(0.78);"></div>
+    <div class="fixed inset-0 z-[1] pointer-events-none"
+         style="background: rgba(7, 11, 25, 0.48);"></div>
+
+    <canvas id="snowCanvas" class="fixed inset-0 pointer-events-none z-[2]"></canvas>
+
+    <!-- Background Ambient Glow Orbs -->
+    <div class="fixed top-10 -left-20 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl pointer-events-none ambient-pulse"></div>
+    <div class="fixed bottom-10 -right-20 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl pointer-events-none ambient-pulse" style="animation-delay: 3.5s;"></div>
+
+    <!-- MAIN APP CONTAINER -->
+    <div class="relative z-10 flex flex-col min-h-screen justify-between items-center px-4 py-6 max-w-5xl mx-auto">
+
+        <!-- HEADER SECTION -->
+        <header class="text-center my-3 w-full flex flex-col items-center">
+            
+            <!-- Top Controls Row -->
+            <div class="w-full flex justify-between items-center mb-6 px-2 sm:px-6">
+                <!-- Maan's Personal Badge -->
+                <div class="kuromi-badge flex items-center gap-2.5 px-4 py-1.5 rounded-full backdrop-blur-md shadow-lg">
+                    <!-- Kuromi Skull SVG Icon -->
+                    <svg class="w-5 h-5 text-kuromi-lavender" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C8 2 5 5 5 9C5 12 7 14 8 15C6 16 3 18 3 21C3 21.5 3.5 22 4 22H20C20.5 22 21 21.5 21 21C21 18 18 16 16 15C17 14 19 12 19 9C19 5 16 2 12 2ZM10 9C10 8.4 10.4 8 11 8C11.6 8 12 8.4 12 9C12 9.6 11.6 10 11 10C10.4 10 10 9.6 10 9ZM14 9C14 8.4 14.4 8 15 8C15.6 8 16 8.4 16 9C16 9.6 15.6 10 15 10C14.4 10 14 9.6 14 9ZM12 18C10 18 8.5 17 8 16H16C15.5 17 14 18 12 18Z"/>
+                    </svg>
+                    <span class="text-xs sm:text-sm font-medium tracking-wide text-kuromi-iceLight">Maan's Cozy Corner 🌙</span>
+                </div>
+
+                <!-- Music Control Button -->
+                <button id="musicToggleBtn" onclick="toggleMusic()" class="flex items-center gap-2.5 bg-indigo-950/70 hover:bg-indigo-900 text-kuromi-iceLight border border-kuromi-ice/40 px-4 py-1.5 rounded-full transition duration-300 text-xs sm:text-sm backdrop-blur-md shadow-lg group">
+                    <i id="musicIcon" class="fa-solid fa-music text-kuromi-ice group-hover:scale-110 transition"></i>
+                    <span id="musicText" class="font-medium">Play "Mary, Did You Know?"</span>
+                </button>
+            </div>
+
+            <!-- Title & Dedicated Tagline -->
+            <div class="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-blue-950/60 border border-blue-400/30 text-xs tracking-widest text-kuromi-ice uppercase mb-3 shadow-inner">
+                <i class="fa-solid fa-snowflake text-[10px] text-blue-300"></i> Christmas 2026 Countdown <i class="fa-solid fa-snowflake text-[10px] text-blue-300"></i>
+            </div>
+
+            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-heading font-extrabold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-blue-100 via-kuromi-iceLight to-indigo-200 glow-text-ice mb-3">
+                Maan's Christmas Countdown
+            </h1>
+
+            <p class="font-serif italic text-base sm:text-lg text-kuromi-iceLight/90 max-w-2xl mx-auto leading-relaxed">
+                "Counting down every quiet second until Christmas morning, wrapped in love with my dearest Maan."
+            </p>
+        </header>
+
+        <!-- MAIN COUNTDOWN SECTION -->
+        <main class="w-full max-w-4xl my-4">
+            
+            <!-- STANDARD COUNTDOWN DISPLAY -->
+            <div id="countdownContainer" class="glass-panel rounded-3xl p-6 sm:p-10 glow-box-blue relative overflow-hidden transition-all duration-700">
+                
+                <!-- Decorative Top Corner Icons -->
+                <div class="absolute top-4 left-6 text-kuromi-ice/30 text-xl pointer-events-none">✨</div>
+                <div class="absolute top-4 right-6 text-kuromi-lavender/30 text-xl pointer-events-none">🌙</div>
+
+                <div class="text-center mb-8">
+                    <h2 class="text-xs sm:text-sm font-semibold tracking-widest uppercase text-kuromi-ice/80 mb-1">
+                        Time Remaining Until
+                    </h2>
+                    <p class="text-xl sm:text-2xl font-heading font-bold text-white tracking-wider flex items-center justify-center gap-2">
+                        <span>🎄</span> December 25, 2026 • 00:00:00 AM <span>🎄</span>
+                    </p>
+                </div>
+
+                <!-- Live Digit Counters -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 text-center">
+                    
+                    <!-- Days -->
+                    <div class="time-card rounded-2xl p-4 sm:p-6 flex flex-col justify-center items-center transform hover:-translate-y-1 transition duration-300">
+                        <span id="days" class="text-4xl sm:text-6xl font-heading font-extrabold text-white glow-text-ice">000</span>
+                        <span class="text-xs sm:text-sm font-medium tracking-wider uppercase text-kuromi-ice mt-2">Days</span>
+                    </div>
+
+                    <!-- Hours -->
+                    <div class="time-card rounded-2xl p-4 sm:p-6 flex flex-col justify-center items-center transform hover:-translate-y-1 transition duration-300">
+                        <span id="hours" class="text-4xl sm:text-6xl font-heading font-extrabold text-white glow-text-ice">00</span>
+                        <span class="text-xs sm:text-sm font-medium tracking-wider uppercase text-kuromi-ice mt-2">Hours</span>
+                    </div>
+
+                    <!-- Minutes -->
+                    <div class="time-card rounded-2xl p-4 sm:p-6 flex flex-col justify-center items-center transform hover:-translate-y-1 transition duration-300">
+                        <span id="minutes" class="text-4xl sm:text-6xl font-heading font-extrabold text-white glow-text-ice">00</span>
+                        <span class="text-xs sm:text-sm font-medium tracking-wider uppercase text-kuromi-ice mt-2">Minutes</span>
+                    </div>
+
+                    <!-- Seconds -->
+                    <div class="time-card rounded-2xl p-4 sm:p-6 flex flex-col justify-center items-center transform hover:-translate-y-1 transition duration-300">
+                        <span id="seconds" class="text-4xl sm:text-6xl font-heading font-extrabold text-kuromi-iceLight glow-text-ice">00</span>
+                        <span class="text-xs sm:text-sm font-medium tracking-wider uppercase text-kuromi-ice mt-2">Seconds</span>
+                    </div>
+                </div>
+
+                <!-- Sub-status Summary Footer -->
+                <div class="text-center mt-8 pt-6 border-t border-blue-500/20 flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <p id="subStatusText" class="text-xs sm:text-sm font-serif italic text-kuromi-iceLight">
+                        Calculating every magical beat of time...
+                    </p>
+                    <button onclick="testChristmasMode()" class="text-xs text-kuromi-lavender hover:text-white underline underline-offset-4 opacity-75 hover:opacity-100 transition">
+                        ✨ Preview Christmas Morning Mode
+                    </button>
+                </div>
+            </div>
+
+            <!-- CHRISTMAS MORNING SURPRISE CELEBRATION (Triggers on Dec 25, 2026 00:00:00) -->
+            <div id="christmasCelebrationContainer" class="hidden glass-panel rounded-3xl p-8 sm:p-12 glow-box-purple text-center relative overflow-hidden transition-all duration-1000">
+                <div class="animate-bounce inline-block mb-4">
+                    <span class="text-7xl">🎄✨</span>
+                </div>
+                <h2 class="text-3xl sm:text-5xl lg:text-6xl font-heading font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-kuromi-iceLight to-pink-200 mb-4 glow-text-gold">
+                    Merry Christmas, My Dearest Maan!
+                </h2>
+                <p class="font-serif italic text-lg sm:text-2xl text-kuromi-iceLight mb-8 max-w-2xl mx-auto leading-relaxed">
+                    The wait is over, my darling moon! Christmas is finally here. May your heart be filled with endless warmth, wonder, and all the sweet magic you give to me every day.
+                </p>
+
+                <div class="p-6 bg-indigo-950/80 rounded-2xl border border-kuromi-lavender/40 max-w-md mx-auto shadow-2xl mb-8 transform hover:scale-105 transition duration-300">
+                    <p class="font-cursive text-4xl text-kuromi-gold mb-2">You are my greatest gift.</p>
+                    <p class="text-xs sm:text-sm text-kuromi-iceLight font-sans tracking-wide">Forever & Always Yours 🖤</p>
+                </div>
+
+                <div class="flex flex-wrap justify-center gap-4">
+                    <button onclick="triggerConfetti()" class="px-8 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-semibold rounded-full shadow-lg transform hover:scale-105 transition duration-300 border border-purple-300/40 text-sm">
+                        ✨ Shower Fireworks & Confetti
+                    </button>
+                    <button onclick="openLetterModal()" class="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-full shadow-lg transform hover:scale-105 transition duration-300 border border-blue-300/40 text-sm">
+                        💌 Read Christmas Morning Letter
+                    </button>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- BIBLE VERSE & SWEET NOTES DUAL SECTION -->
+        <section class="w-full max-w-4xl my-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- Bible Verse Card -->
+            <div class="glass-card rounded-2xl p-6 flex flex-col justify-between relative overflow-hidden group hover:border-kuromi-ice/50 transition duration-300">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-xs font-semibold tracking-widest text-kuromi-ice uppercase flex items-center gap-2">
+                        <i class="fa-solid fa-book-bible text-blue-400"></i> Sacred Words of Love
+                    </span>
+                    <i class="fa-solid fa-cross text-indigo-400/30 group-hover:text-kuromi-ice transition duration-300"></i>
+                </div>
+
+                <blockquote class="my-auto py-2">
+                    <p id="bibleVerseText" class="font-serif italic text-base sm:text-lg text-slate-100 leading-relaxed mb-3 transition-opacity duration-300">
+                        "Love is patient, love is kind. It does not envy, it does not boast, it is not proud... It always protects, always trusts, always hopes, always perseveres. Love never fails."
+                    </p>
+                    <cite id="bibleVerseRef" class="block text-right text-xs font-semibold text-kuromi-ice not-italic tracking-wider uppercase">
+                        — 1 Corinthians 13:4-8
+                    </cite>
+                </blockquote>
+
+                <div class="mt-4 pt-3 border-t border-indigo-500/20 flex justify-between items-center">
+                    <span class="text-xs text-kuromi-ice/70">A daily blessing for Maan</span>
+                    <button onclick="nextVerse()" class="text-xs text-kuromi-iceLight hover:text-white flex items-center gap-1.5 bg-indigo-900/40 px-3 py-1 rounded-full border border-indigo-400/20 hover:border-indigo-400/50 transition">
+                        Next Verse <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sweet Note & Kuromi Card -->
+            <div class="glass-card rounded-2xl p-6 flex flex-col justify-between relative overflow-hidden group hover:border-kuromi-lavender/50 transition duration-300">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-xs font-semibold tracking-widest text-kuromi-lavender uppercase flex items-center gap-2">
+                        <i class="fa-solid fa-heart text-pink-400 animate-pulse"></i> Sweet Note For Maan
+                    </span>
+                    <span class="text-xs bg-purple-950/70 text-kuromi-lavender border border-purple-400/30 px-2.5 py-0.5 rounded-full font-mono flex items-center gap-1">
+                        🖤 Kuromi Note
+                    </span>
+                </div>
+
+                <div class="my-auto py-2">
+                    <p id="dailyLoveNote" class="font-sans text-sm sm:text-base text-slate-100/95 leading-relaxed italic transition-opacity duration-300">
+                        "My dearest Maan, just like your name means 'Moon', you bring a calm, celestial light into my world every single day. I cherish every moment leading up to Christmas with you."
+                    </p>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-purple-500/20 flex justify-between items-center">
+                    <span class="text-xs text-kuromi-lavender/70">Written with all my heart</span>
+                    <button onclick="openLetterModal()" class="text-xs bg-purple-900/50 hover:bg-purple-800/80 text-white px-3.5 py-1 rounded-full border border-purple-400/30 transition flex items-center gap-1.5 shadow-md">
+                        Read My Letter <i class="fa-solid fa-envelope-open-text text-[10px]"></i>
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- POPUP LETTER MODAL -->
+        <div id="letterModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden transition-opacity duration-300 opacity-0">
+            <div class="glass-panel max-w-lg w-full rounded-3xl p-6 sm:p-8 shadow-2xl relative border border-kuromi-lavender/40 transform scale-95 transition-transform duration-300" id="letterContent">
+                
+                <!-- Close Button -->
+                <button onclick="closeLetterModal()" class="absolute top-4 right-4 text-kuromi-iceLight hover:text-white text-xl w-8 h-8 rounded-full bg-slate-900/60 flex items-center justify-center border border-slate-700/50">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+
+                <!-- Modal Header -->
+                <div class="text-center mb-6">
+                    <div class="inline-flex p-3 bg-indigo-900/60 rounded-full border border-kuromi-lavender/40 mb-2 shadow-inner">
+                        <i class="fa-solid fa-envelope text-2xl text-kuromi-lavender"></i>
+                    </div>
+                    <h3 class="text-2xl font-heading font-bold text-white">My Letter To Maan</h3>
+                    <p class="text-xs text-kuromi-ice uppercase tracking-widest mt-1">To the girl who holds my whole heart</p>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="font-serif text-slate-200 text-sm sm:text-base leading-relaxed space-y-4 max-h-72 overflow-y-auto pr-2">
+                    <p>My Dearest Maan,</p>
+                    <p>
+                        As the days tick softly away toward Christmas 2026, I built this space specifically for you—a quiet, aesthetic sanctuary where you can return whenever you wish to feel how deeply you are loved.
+                    </p>
+                    <p>
+                        Your name, <em>Maan</em>, carries the serene beauty of the moon—bright, gentle, and guiding. And just like Kuromi with her playful spirit and adorable style, you bring endless joy, laughter, and vibrant color into my life.
+                    </p>
+                    <p>
+                        No matter how many days remain on this timer, my gratitude for having you in my life grows stronger with every passing second. You are my home, my comfort, and my favorite blessing.
+                    </p>
+                    <p class="text-right font-cursive text-2xl text-kuromi-lavender pt-2">
+                        Forever & Always Yours ❤️
+                    </p>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="mt-6 text-center">
+                    <button onclick="closeLetterModal()" class="px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-medium text-xs sm:text-sm rounded-full transition shadow-lg border border-blue-300/30">
+                        Close Letter
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="text-center mt-6 text-xs text-kuromi-ice/60 w-full py-4 border-t border-indigo-950/60">
+            <p class="mb-1">Crafted with endless love for <span class="text-kuromi-iceLight font-semibold">Maan</span> 💙</p>
+            <p>Christmas 2026 • Real-Time Countdown & Dedicated Love Space</p>
+        </footer>
+
+    </div>
+
+    <script>
+        /* ----------------------------------------------------
+           1. COUNTDOWN CORE LOGIC (Target: Dec 25, 2026 00:00:00)
+           ---------------------------------------------------- */
+        const targetDate = new Date("December 25, 2026 00:00:00").getTime();
+
+        const daysEl = document.getElementById("days");
+        const hoursEl = document.getElementById("hours");
+        const minutesEl = document.getElementById("minutes");
+        const secondsEl = document.getElementById("seconds");
+        const subStatusText = document.getElementById("subStatusText");
+        const countdownContainer = document.getElementById("countdownContainer");
+        const christmasCelebrationContainer = document.getElementById("christmasCelebrationContainer");
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            if (distance <= 0) {
+                // Target reached! Switch to Christmas Celebration View
+                countdownContainer.classList.add("hidden");
+                christmasCelebrationContainer.classList.remove("hidden");
+                triggerConfetti();
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            daysEl.innerText = days < 100 ? (days < 10 ? "00" + days : "0" + days) : days;
+            hoursEl.innerText = hours < 10 ? "0" + hours : hours;
+            minutesEl.innerText = minutes < 10 ? "0" + minutes : minutes;
+            secondsEl.innerText = seconds < 10 ? "0" + seconds : seconds;
+
+            subStatusText.innerHTML = `✨ Exactly <span class="text-white font-semibold">${days} days</span>, <span class="text-white font-semibold">${hours} hrs</span>, and <span class="text-white font-semibold">${minutes} mins</span> remaining for Maan! ✨`;
+        }
+
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+
+        function testChristmasMode() {
+            if (countdownContainer.classList.contains("hidden")) {
+                countdownContainer.classList.remove("hidden");
+                christmasCelebrationContainer.classList.add("hidden");
+            } else {
+                countdownContainer.classList.add("hidden");
+                christmasCelebrationContainer.classList.remove("hidden");
+                triggerConfetti();
+            }
+        }
+
+
+        /* ----------------------------------------------------
+           2. BIBLE VERSES & SWEET NOTES ROTATION
+           ---------------------------------------------------- */
+        const bibleVerses = [
+            {
+                text: '"Love is patient, love is kind. It does not envy, it does not boast, it is not proud... It always protects, always trusts, always hopes, always perseveres. Love never fails."',
+                ref: '— 1 Corinthians 13:4-8'
+            },
+            {
+                text: '"We love because He first loved us."',
+                ref: '— 1 John 4:19'
+            },
+            {
+                text: '"Let love and faithfulness never leave you; bind them around your neck, write them on the tablet of your heart."',
+                ref: '— Proverbs 3:3-4'
+            },
+            {
+                text: '"I have found the one whom my soul loves."',
+                ref: '— Song of Solomon 3:4'
+            },
+            {
+                text: '"Every good and perfect gift is from above, coming down from the Father of the heavenly lights."',
+                ref: '— James 1:17'
+            }
+        ];
+
+        const loveNotes = [
+            '"My dearest Maan, just like your name means \'Moon\', you bring a calm, celestial light into my world every single day. I cherish every moment leading up to Christmas with you."',
+            '"Your smile is my favorite Christmas present, Maan. Every tick of this timer brings me closer to seeing you shine."',
+            '"Holding you in my thoughts fills even the coldest winter days with warmth. I am so blessed to love you."',
+            '"In a world full of temporary things, my love for you is a constant, everlasting promise. Counting down every second with pure joy."'
+        ];
+
+        let verseIndex = 0;
+
+        function nextVerse() {
+            verseIndex = (verseIndex + 1) % bibleVerses.length;
+            const verseEl = document.getElementById("bibleVerseText");
+            const refEl = document.getElementById("bibleVerseRef");
+
+            verseEl.style.opacity = '0';
+            refEl.style.opacity = '0';
+
+            setTimeout(() => {
+                verseEl.innerText = bibleVerses[verseIndex].text;
+                refEl.innerText = bibleVerses[verseIndex].ref;
+                verseEl.style.opacity = '1';
+                refEl.style.opacity = '1';
+            }, 250);
+        }
+
+        // Randomize daily note on load
+        document.getElementById("dailyLoveNote").innerText = loveNotes[Math.floor(Math.random() * loveNotes.length)];
+
+
+        /* ----------------------------------------------------
+           3. POPUP MODAL CONTROL
+           ---------------------------------------------------- */
+        const letterModal = document.getElementById("letterModal");
+        const letterContent = document.getElementById("letterContent");
+
+        function openLetterModal() {
+            letterModal.classList.remove("hidden");
+            setTimeout(() => {
+                letterModal.classList.remove("opacity-0");
+                letterContent.classList.remove("scale-95");
+                letterContent.classList.add("scale-100");
+            }, 10);
+        }
+
+        function closeLetterModal() {
+            letterModal.classList.add("opacity-0");
+            letterContent.classList.remove("scale-100");
+            letterContent.classList.add("scale-95");
+            setTimeout(() => {
+                letterModal.classList.add("hidden");
+            }, 300);
+        }
+
+        letterModal.addEventListener('click', (e) => {
+            if (e.target === letterModal) closeLetterModal();
+        });
+
+
+        /* ----------------------------------------------------
+           4. BACKGROUND MUSIC PLAYER
+              User-provided MP3
+           ---------------------------------------------------- */
+        const backgroundMusic = new Audio("music.mp3");
+        backgroundMusic.preload = "auto";
+        backgroundMusic.loop = true;
+        backgroundMusic.volume = 0.7;
+
+        let isPlayingMusic = false;
+
+        function toggleMusic() {
+            const btnText = document.getElementById("musicText");
+            const btnIcon = document.getElementById("musicIcon");
+
+            if (!isPlayingMusic) {
+                backgroundMusic.play()
+                    .then(() => {
+                        isPlayingMusic = true;
+                        btnText.innerText = "Pause Music";
+                        btnIcon.className = "fa-solid fa-pause text-pink-400";
+                    })
+                    .catch((error) => {
+                        console.error("Unable to play music:", error);
+                    });
+            } else {
+                backgroundMusic.pause();
+                isPlayingMusic = false;
+                btnText.innerText = 'Play Music';
+                btnIcon.className = "fa-solid fa-music text-kuromi-ice";
+            }
+        }
+
+        backgroundMusic.addEventListener("ended", () => {
+            isPlayingMusic = false;
+            document.getElementById("musicText").innerText = 'Play Music';
+            document.getElementById("musicIcon").className = "fa-solid fa-music text-kuromi-ice";
+        });
+
+        /* ----------------------------------------------------
+           5. CANVAS PARTICLES & SNOW ANIMATION
+           ---------------------------------------------------- */
+        const canvas = document.getElementById("snowCanvas");
+        const ctx = canvas.getContext("2d");
+
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        window.addEventListener("resize", () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+
+        const particles = [];
+        const particleCount = 90;
+
+        for (let i = 0; i < particleCount; i++) {
+            particles.push({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                radius: Math.random() * 2.2 + 0.6,
+                density: Math.random() * 1,
+                alpha: Math.random() * 0.8 + 0.2,
+                twinkleSpeed: Math.random() * 0.02 + 0.005,
+                isStar: Math.random() > 0.55
+            });
+        }
+
+        function renderParticles() {
+            ctx.clearRect(0, 0, width, height);
+
+            particles.forEach((p) => {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+
+                if (p.isStar) {
+                    p.alpha += p.twinkleSpeed;
+                    if (p.alpha > 0.95 || p.alpha < 0.15) p.twinkleSpeed = -p.twinkleSpeed;
+                    ctx.fillStyle = `rgba(192, 132, 252, ${p.alpha})`;
+                } else {
+                    p.y += Math.cos(p.density) + 1 + p.radius / 2;
+                    p.x += Math.sin(p.density) * 0.4;
+
+                    if (p.y > height) {
+                        p.y = -10;
+                        p.x = Math.random() * width;
+                    }
+                    ctx.fillStyle = `rgba(219, 234, 254, ${p.alpha})`;
+                }
+
+                ctx.fill();
+            });
+
+            requestAnimationFrame(renderParticles);
+        }
+
+        window.onload = function() {
+            renderParticles();
+        };
+
+
+        /* ----------------------------------------------------
+           6. CELEBRATION CONFETTI SURPRISE
+           ---------------------------------------------------- */
+        function triggerConfetti() {
+            const confettiColors = ['#93c5fd', '#c084fc', '#fef08a', '#f472b6', '#ffffff'];
+            for (let i = 0; i < 80; i++) {
+                const confetti = document.createElement('div');
+                confetti.style.position = 'fixed';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.top = '-10px';
+                confetti.style.width = Math.random() * 8 + 4 + 'px';
+                confetti.style.height = Math.random() * 10 + 6 + 'px';
+                confetti.style.backgroundColor = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+                confetti.style.borderRadius = '2px';
+                confetti.style.zIndex = '999';
+                confetti.style.pointerEvents = 'none';
+                
+                document.body.appendChild(confetti);
+
+                const duration = Math.random() * 3 + 2.5;
+                confetti.style.transition = `transform ${duration}s ease-out, opacity ${duration}s ease-out`;
+
+                setTimeout(() => {
+                    confetti.style.transform = `translateY(${window.innerHeight + 60}px) rotate(${Math.random() * 720}deg)`;
+                    confetti.style.opacity = '0';
+                }, 50);
+
+                setTimeout(() => {
+                    confetti.remove();
+                }, duration * 1000);
+            }
+        }
+    </script>
+</body>
+</html>
