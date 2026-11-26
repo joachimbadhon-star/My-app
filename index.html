@@ -1,37 +1,84 @@
 
-import time
-import random
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello, Student!</title>
 
-def welcome_student():
-    greetings = [
-        "Hey there! 👋",
-        "Hello, student! 😊",
-        "Hi! Great to see you here!",
-        "Hey! Welcome aboard!"
-    ]
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #141e30, #243b55);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
 
-    messages = [
-        "Hope you're having a wonderful day.",
-        "Keep learning, keep growing, and never give up!",
-        "Remember, every small step brings you closer to success.",
-        "You've got this! Make today count."
-    ]
+        .welcome {
+            padding: 40px 25px;
+            max-width: 450px;
+        }
 
-    print("\n" + "=" * 45)
-    time.sleep(0.7)
+        h1 {
+            font-size: 38px;
+            margin-bottom: 15px;
+        }
 
-    print(random.choice(greetings))
-    time.sleep(1)
+        p {
+            font-size: 17px;
+            line-height: 1.7;
+            color: #d6deea;
+        }
 
-    print("\nWelcome to our student community!")
-    time.sleep(1)
+        button {
+            margin-top: 20px;
+            padding: 13px 28px;
+            border: none;
+            border-radius: 30px;
+            background: #ffffff;
+            color: #243b55;
+            font-size: 16px;
+            cursor: pointer;
+        }
 
-    print(random.choice(messages))
-    time.sleep(0.7)
+        button:hover {
+            background: #dce6f5;
+        }
+    </style>
+</head>
 
-    print("\nHave a great day ahead! 🌟")
-    print("=" * 45)
+<body>
 
+    <div class="welcome">
+        <h1>Hello, Student! 👋</h1>
 
-if __name__ == "__main__":
-    welcome_student()
+        <p>
+            We're glad you're here.
+            Every day is another opportunity
+            to learn something new, make progress,
+            and become a better version of yourself.
+        </p>
+
+        <p>
+            Take your time, enjoy the journey,
+            and remember — you've got this!
+        </p>
+
+        <button onclick="sayHello()">
+            Say Hello!
+        </button>
+    </div>
+
+    <script>
+        function sayHello() {
+            alert("Hey there! 😊 Hope you're having a great day. Keep learning!");
+        }
+    </script>
+
+</body>
+</html>
