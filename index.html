@@ -1,15 +1,15 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello, Student!</title>
+    <title>শিক্ষার্থী স্বাগতম</title>
 
     <style>
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
+            font-family: "Noto Sans Bengali", sans-serif;
             background: linear-gradient(135deg, #141e30, #243b55);
             color: white;
             min-height: 100vh;
@@ -20,18 +20,17 @@
         }
 
         .welcome {
-            padding: 40px 25px;
+            padding: 35px 25px;
             max-width: 450px;
         }
 
         h1 {
-            font-size: 38px;
-            margin-bottom: 15px;
+            font-size: 32px;
         }
 
         p {
-            font-size: 17px;
-            line-height: 1.7;
+            font-size: 18px;
+            line-height: 1.9;
             color: #d6deea;
         }
 
@@ -40,9 +39,9 @@
             padding: 13px 28px;
             border: none;
             border-radius: 30px;
-            background: #ffffff;
+            background: white;
             color: #243b55;
-            font-size: 16px;
+            font-size: 17px;
             cursor: pointer;
         }
 
@@ -55,28 +54,42 @@
 <body>
 
     <div class="welcome">
-        <h1>Hello, Student! 👋</h1>
+        <h1>কী খবর, শিক্ষার্থী? 👋</h1>
 
         <p>
-            We're glad you're here.
-            Every day is another opportunity
-            to learn something new, make progress,
-            and become a better version of yourself.
+            আশা করি ভালো আছো!
+            নতুন কিছু শেখার জন্য প্রস্তুত তো?
         </p>
 
         <p>
-            Take your time, enjoy the journey,
-            and remember — you've got this!
+            মনে রেখো, সবকিছু একদিনে শেখা সম্ভব না।
+            একটু একটু করে এগিয়ে যাও।
+            ভুল হলে সমস্যা নেই, ভুল থেকেই তো শেখা!
+        </p>
+
+        <p>
+            তো, আজ কী শেখা যাক? 😊
         </p>
 
         <button onclick="sayHello()">
-            Say Hello!
+            এখানে ক্লিক করো
         </button>
     </div>
 
     <script>
         function sayHello() {
-            alert("Hey there! 😊 Hope you're having a great day. Keep learning!");
+            const messages = [
+                "কী রে! সব ঠিকঠাক বুঝতেছিস তো? 😄",
+                "আরে, ভয় পাওয়ার কিছু নেই! ধীরে ধীরে শেখ।",
+                "কিছু না বুঝলে আবার চেষ্টা কর, আমি আছি!",
+                "পড়াশোনার পাশাপাশি একটু হাসিখুশিও থাকিস! 😁",
+                "আজকে কিন্তু নতুন কিছু শিখতেই হবে!"
+            ];
+
+            const randomMessage =
+                messages[Math.floor(Math.random() * messages.length)];
+
+            alert(randomMessage);
         }
     </script>
 
